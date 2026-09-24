@@ -162,6 +162,7 @@ function QuoteForm({
             className="quote-form"
             onSubmit={handleSubmit}
             noValidate
+            aria-busy={isSubmitting}
         >
             {serverErrors.length > 0 && (
                 <div
@@ -615,6 +616,7 @@ function QuoteForm({
                     className="button button-primary"
                     type="submit"
                     disabled={isSubmitting}
+                    aria-busy={isSubmitting}
                 >
                     {isSubmitting
                         ? 'Saving quote...'

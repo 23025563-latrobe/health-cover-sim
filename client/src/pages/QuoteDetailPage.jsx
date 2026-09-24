@@ -76,7 +76,12 @@ function QuoteDetailPage() {
 
         try {
             await deleteQuote(id);
-            navigate('/');
+
+            navigate('/', {
+                state: {
+                    successMessage: 'Quote deleted successfully.'
+                }
+            });
         } catch (requestError) {
             setError(requestError.message);
             setIsDeleting(false);

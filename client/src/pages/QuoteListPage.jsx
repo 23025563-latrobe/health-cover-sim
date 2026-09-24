@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import {
+    Link,
+    useLocation
+} from 'react-router-dom';
 
 import { getQuotes } from '../services/quoteApi';
 
@@ -9,6 +12,8 @@ const currencyFormatter = new Intl.NumberFormat('en-AU', {
 });
 
 function QuoteListPage() {
+    const location = useLocation();
+
     const [quotes, setQuotes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -30,7 +35,10 @@ function QuoteListPage() {
 
     if (isLoading) {
         return (
-            <section className="status-panel">
+            <section
+                className="status-panel"
+                aria-live="polite"
+            >
                 <p>Loading quotes...</p>
             </section>
         );
@@ -40,51 +48,94 @@ function QuoteListPage() {
         <>
             <section className="page-heading">
                 <div>
-                    <p className="eyebrow">Quote management</p>
+                    <p className="eyebrow">
+                        Quote management
+                    </p>
+
                     <h1>Health insurance quotes</h1>
+
                     <p>
-                        Create and manage clear premium estimates for Single,
-                        Couple and Family cover.
+                        Create and manage clear premium estimates
+                        for Single, Couple and Family cover.
                     </p>
                 </div>
 
-                <Link className="button button-primary" to="/quotes/new">
+                <Link
+                    className="button button-primary"
+                    to="/quotes/new"
+                >
                     Create new quote
                 </Link>
             </section>
 
+            {location.state?.successMessage && (
+                <div
+                    className="alert alert-success"
+                    role="status"
+                >
+                    <strong>
+                        {location.state.successMessage}
+                    </strong>
+                </div>
+            )}
+
             {error && (
-                <div className="alert alert-error" role="alert">
-                    <strong>Quotes could not be loaded.</strong>
+                <div
+                    className="alert alert-error"
+                    role="alert"
+                >
+                    <strong>
+                        Quotes could not be loaded.
+                    </strong>
+
                     <span>{error}</span>
                 </div>
             )}
 
             {!error && quotes.length === 0 && (
                 <section className="empty-state">
-                    <div className="empty-state-icon">+</div>
+                    <div
+                        className="empty-state-icon"
+                        aria-hidden="true"
+                    >
+                        +
+                    </div>
+
                     <h2>No quotes yet</h2>
+
                     <p>
-                        Create your first quote to calculate monthly and yearly
-                        premium estimates.
+                        Create your first quote to calculate
+                        monthly and yearly premium estimates.
                     </p>
 
-                    <Link className="button button-primary" to="/quotes/new">
+                    <Link
+                        className="button button-primary"
+                        to="/quotes/new"
+                    >
                         Create first quote
                     </Link>
                 </section>
             )}
 
             {!error && quotes.length > 0 && (
-                <section className="quote-grid" aria-label="Saved quotes">
+                <section
+                    className="quote-grid"
+                    aria-label="Saved quotes"
+                >
                     {quotes.map((quote) => (
-                        <article className="quote-card" key={quote.id}>
+                        <article
+                            className="quote-card"
+                            key={quote.id}
+                        >
                             <div className="quote-card-header">
                                 <div>
                                     <span className="quote-number">
                                         Quote #{quote.id}
                                     </span>
-                                    <h2>{quote.customer_name}</h2>
+
+                                    <h2>
+                                        {quote.customer_name}
+                                    </h2>
                                 </div>
 
                                 <span className="cover-badge">
@@ -95,29 +146,42 @@ function QuoteListPage() {
                             <dl className="quote-summary">
                                 <div>
                                     <dt>Hospital</dt>
-                                    <dd>{quote.hospital_cover}</dd>
+                                    <dd>
+                                        {
+                                            quote
+                                                .hospital_cover
+                                        }
+                                    </dd>
                                 </div>
 
                                 <div>
                                     <dt>Extras</dt>
-                                    <dd>{quote.extras_cover}</dd>
+                                    <dd>
+                                        {quote.extras_cover}
+                                    </dd>
                                 </div>
 
                                 <div>
-                                    <dt>Monthly estimate</dt>
+                                    <dt>
+                                        Monthly estimate
+                                    </dt>
+
                                     <dd>
                                         {currencyFormatter.format(
-                                            quote.calculation.monthly_premium
+                                            quote.calculation
+                                                .monthly_premium
                                         )}
                                     </dd>
                                 </div>
 
                                 <div>
                                     <dt>
-                                        {quote.payment_frequency === 'Yearly'
+                                        {quote.payment_frequency ===
+                                        'Yearly'
                                             ? 'Discounted yearly estimate'
                                             : 'Yearly estimate'}
                                     </dt>
+
                                     <dd>
                                         {currencyFormatter.format(
                                             quote.calculation
@@ -130,6 +194,7 @@ function QuoteListPage() {
                             <Link
                                 className="text-link"
                                 to={`/quotes/${quote.id}`}
+                                aria-label={`View quote ${quote.id} for ${quote.customer_name}`}
                             >
                                 View explanation
                             </Link>

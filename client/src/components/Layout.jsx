@@ -3,6 +3,9 @@ import { NavLink, Outlet } from 'react-router-dom';
 function Layout() {
     return (
         <div className="app-shell">
+            <a className="skip-link" href="#main-content">
+                Skip to main content
+            </a>
             <header className="site-header">
                 <div className="container header-content">
                     <NavLink className="brand" to="/">
@@ -18,7 +21,7 @@ function Layout() {
                         <NavLink
                             to="/"
                             end
-                            className={({ isActive }) =>
+                            className={({isActive}) =>
                                 isActive ? 'nav-link active' : 'nav-link'
                             }
                         >
@@ -27,7 +30,7 @@ function Layout() {
 
                         <NavLink
                             to="/quotes/new"
-                            className={({ isActive }) =>
+                            className={({isActive}) =>
                                 isActive ? 'nav-link active' : 'nav-link'
                             }
                         >
@@ -37,8 +40,12 @@ function Layout() {
                 </div>
             </header>
 
-            <main className="container main-content">
-                <Outlet />
+            <main
+                id="main-content"
+                className="container main-content"
+                tabIndex="-1"
+            >
+                <Outlet/>
             </main>
 
             <footer className="site-footer">
