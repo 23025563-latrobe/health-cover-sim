@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const initialFormData = {
     customer_name: '',
@@ -13,6 +13,15 @@ const initialFormData = {
     annual_discount: 0,
     notes: ''
 };
+
+function createInitialFormData(initialValues) {
+    return {
+        ...initialFormData,
+        ...initialValues,
+        applicant1_age: initialValues.applicant1_age ?? '',
+        applicant2_age: initialValues.applicant2_age ?? ''
+    };
+}
 
 function validateForm(formData) {
     const errors = {};
@@ -63,15 +72,20 @@ function prepareQuotePayload(formData) {
     const includesApplicant2 = formData.cover_type !== 'Single';
 
     return {
-        ...formData,
         customer_name: formData.customer_name.trim(),
+        cover_type: formData.cover_type,
         applicant1_age: Number(formData.applicant1_age),
+        applicant1_cover_history:
+        formData.applicant1_cover_history,
         applicant2_age: includesApplicant2
             ? Number(formData.applicant2_age)
             : null,
         applicant2_cover_history: includesApplicant2
             ? formData.applicant2_cover_history
             : null,
+        hospital_cover: formData.hospital_cover,
+        extras_cover: formData.extras_cover,
+        payment_frequency: formData.payment_frequency,
         annual_discount:
             formData.payment_frequency === 'Yearly'
                 ? Number(formData.annual_discount)
@@ -87,23 +101,15 @@ function QuoteForm({
                        isSubmitting,
                        serverErrors = []
                    }) {
-    const [formData, setFormData] = useState({
-        ...initialFormData,
-        ...initialValues
-    });
+    const [formData, setFormData] = useState(() =>
+        createInitialFormData(initialValues)
+    );
     const [fieldErrors, setFieldErrors] = useState({});
 
-    const includesApplicant2 = formData.cover_type !== 'Single';
-    const isYearlyPayment = formData.payment_frequency === 'Yearly';
-
-    useEffect(() => {
-        setFormData({
-            ...initialFormData,
-            ...initialValues,
-            applicant1_age: initialValues.applicant1_age ?? '',
-            applicant2_age: initialValues.applicant2_age ?? ''
-        });
-    }, [initialValues]);
+    const includesApplicant2 =
+        formData.cover_type !== 'Single';
+    const isYearlyPayment =
+        formData.payment_frequency === 'Yearly';
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -114,7 +120,10 @@ function QuoteForm({
                 [name]: value
             };
 
-            if (name === 'cover_type' && value === 'Single') {
+            if (
+                name === 'cover_type' &&
+                value === 'Single'
+            ) {
                 updatedData.applicant2_age = '';
                 updatedData.applicant2_cover_history = 'Yes';
             }
@@ -149,10 +158,19 @@ function QuoteForm({
     }
 
     return (
-        <form className="quote-form" onSubmit={handleSubmit} noValidate>
+        <form
+            className="quote-form"
+            onSubmit={handleSubmit}
+            noValidate
+        >
             {serverErrors.length > 0 && (
-                <div className="alert alert-error" role="alert">
-                    <strong>The quote could not be saved.</strong>
+                <div
+                    className="alert alert-error"
+                    role="alert"
+                >
+                    <strong>
+                        The quote could not be saved.
+                    </strong>
 
                     <ul>
                         {serverErrors.map((error) => (
@@ -164,13 +182,16 @@ function QuoteForm({
 
             <section className="form-section">
                 <div className="form-section-heading">
-                    <span className="section-number">1</span>
+                    <span className="section-number">
+                        1
+                    </span>
 
                     <div>
                         <h2>Customer and cover</h2>
+
                         <p>
-                            Enter the customer’s name and required type of
-                            cover.
+                            Enter the customer’s name and
+                            required type of cover.
                         </p>
                     </div>
                 </div>
@@ -190,17 +211,27 @@ function QuoteForm({
                             aria-invalid={Boolean(
                                 fieldErrors.customer_name
                             )}
+                            aria-describedby={
+                                fieldErrors.customer_name
+                                    ? 'customer_name_error'
+                                    : undefined
+                            }
                         />
 
                         {fieldErrors.customer_name && (
-                            <span className="field-error">
+                            <span
+                                id="customer_name_error"
+                                className="field-error"
+                            >
                                 {fieldErrors.customer_name}
                             </span>
                         )}
                     </div>
 
                     <div className="form-field">
-                        <label htmlFor="cover_type">Cover type</label>
+                        <label htmlFor="cover_type">
+                            Cover type
+                        </label>
 
                         <select
                             id="cover_type"
@@ -208,9 +239,17 @@ function QuoteForm({
                             value={formData.cover_type}
                             onChange={handleChange}
                         >
-                            <option value="Single">Single</option>
-                            <option value="Couple">Couple</option>
-                            <option value="Family">Family</option>
+                            <option value="Single">
+                                Single
+                            </option>
+
+                            <option value="Couple">
+                                Couple
+                            </option>
+
+                            <option value="Family">
+                                Family
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -218,13 +257,16 @@ function QuoteForm({
 
             <section className="form-section">
                 <div className="form-section-heading">
-                    <span className="section-number">2</span>
+                    <span className="section-number">
+                        2
+                    </span>
 
                     <div>
                         <h2>Applicant details</h2>
+
                         <p>
-                            Cover history is used to determine whether an LHC
-                            loading may apply.
+                            Cover history is used to determine
+                            whether an LHC loading may apply.
                         </p>
                     </div>
                 </div>
@@ -234,7 +276,9 @@ function QuoteForm({
 
                     <div className="form-grid">
                         <div className="form-field">
-                            <label htmlFor="applicant1_age">Age</label>
+                            <label htmlFor="applicant1_age">
+                                Age
+                            </label>
 
                             <input
                                 id="applicant1_age"
@@ -243,16 +287,29 @@ function QuoteForm({
                                 min="18"
                                 max="100"
                                 step="1"
-                                value={formData.applicant1_age}
+                                value={
+                                    formData.applicant1_age
+                                }
                                 onChange={handleChange}
                                 aria-invalid={Boolean(
                                     fieldErrors.applicant1_age
                                 )}
+                                aria-describedby={
+                                    fieldErrors.applicant1_age
+                                        ? 'applicant1_age_error'
+                                        : undefined
+                                }
                             />
 
                             {fieldErrors.applicant1_age && (
-                                <span className="field-error">
-                                    {fieldErrors.applicant1_age}
+                                <span
+                                    id="applicant1_age_error"
+                                    className="field-error"
+                                >
+                                    {
+                                        fieldErrors
+                                            .applicant1_age
+                                    }
                                 </span>
                             )}
                         </div>
@@ -266,12 +323,19 @@ function QuoteForm({
                                 id="applicant1_cover_history"
                                 name="applicant1_cover_history"
                                 value={
-                                    formData.applicant1_cover_history
+                                    formData
+                                        .applicant1_cover_history
                                 }
                                 onChange={handleChange}
                             >
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
+                                <option value="Yes">
+                                    Yes
+                                </option>
+
+                                <option value="No">
+                                    No
+                                </option>
+
                                 <option value="Not sure">
                                     Not sure
                                 </option>
@@ -297,16 +361,32 @@ function QuoteForm({
                                     min="18"
                                     max="100"
                                     step="1"
-                                    value={formData.applicant2_age}
+                                    value={
+                                        formData
+                                            .applicant2_age
+                                    }
                                     onChange={handleChange}
                                     aria-invalid={Boolean(
-                                        fieldErrors.applicant2_age
+                                        fieldErrors
+                                            .applicant2_age
                                     )}
+                                    aria-describedby={
+                                        fieldErrors
+                                            .applicant2_age
+                                            ? 'applicant2_age_error'
+                                            : undefined
+                                    }
                                 />
 
                                 {fieldErrors.applicant2_age && (
-                                    <span className="field-error">
-                                        {fieldErrors.applicant2_age}
+                                    <span
+                                        id="applicant2_age_error"
+                                        className="field-error"
+                                    >
+                                        {
+                                            fieldErrors
+                                                .applicant2_age
+                                        }
                                     </span>
                                 )}
                             </div>
@@ -320,12 +400,19 @@ function QuoteForm({
                                     id="applicant2_cover_history"
                                     name="applicant2_cover_history"
                                     value={
-                                        formData.applicant2_cover_history
+                                        formData
+                                            .applicant2_cover_history
                                     }
                                     onChange={handleChange}
                                 >
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
+                                    <option value="Yes">
+                                        Yes
+                                    </option>
+
+                                    <option value="No">
+                                        No
+                                    </option>
+
                                     <option value="Not sure">
                                         Not sure
                                     </option>
@@ -338,13 +425,16 @@ function QuoteForm({
 
             <section className="form-section">
                 <div className="form-section-heading">
-                    <span className="section-number">3</span>
+                    <span className="section-number">
+                        3
+                    </span>
 
                     <div>
                         <h2>Cover selection</h2>
+
                         <p>
-                            Select the hospital and extras cover levels used
-                            in the estimate.
+                            Select the hospital and extras cover
+                            levels used in the estimate.
                         </p>
                     </div>
                 </div>
@@ -361,11 +451,25 @@ function QuoteForm({
                             value={formData.hospital_cover}
                             onChange={handleChange}
                         >
-                            <option value="None">None</option>
-                            <option value="Basic">Basic</option>
-                            <option value="Bronze">Bronze</option>
-                            <option value="Silver">Silver</option>
-                            <option value="Gold">Gold</option>
+                            <option value="None">
+                                None
+                            </option>
+
+                            <option value="Basic">
+                                Basic
+                            </option>
+
+                            <option value="Bronze">
+                                Bronze
+                            </option>
+
+                            <option value="Silver">
+                                Silver
+                            </option>
+
+                            <option value="Gold">
+                                Gold
+                            </option>
                         </select>
                     </div>
 
@@ -380,10 +484,21 @@ function QuoteForm({
                             value={formData.extras_cover}
                             onChange={handleChange}
                         >
-                            <option value="None">None</option>
-                            <option value="Basic">Basic</option>
-                            <option value="Standard">Standard</option>
-                            <option value="Premium">Premium</option>
+                            <option value="None">
+                                None
+                            </option>
+
+                            <option value="Basic">
+                                Basic
+                            </option>
+
+                            <option value="Standard">
+                                Standard
+                            </option>
+
+                            <option value="Premium">
+                                Premium
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -391,13 +506,16 @@ function QuoteForm({
 
             <section className="form-section">
                 <div className="form-section-heading">
-                    <span className="section-number">4</span>
+                    <span className="section-number">
+                        4
+                    </span>
 
                     <div>
                         <h2>Payment and notes</h2>
+
                         <p>
-                            Annual discounts apply only when yearly payment
-                            is selected.
+                            Annual discounts apply only when
+                            yearly payment is selected.
                         </p>
                     </div>
                 </div>
@@ -411,11 +529,18 @@ function QuoteForm({
                         <select
                             id="payment_frequency"
                             name="payment_frequency"
-                            value={formData.payment_frequency}
+                            value={
+                                formData.payment_frequency
+                            }
                             onChange={handleChange}
                         >
-                            <option value="Monthly">Monthly</option>
-                            <option value="Yearly">Yearly</option>
+                            <option value="Monthly">
+                                Monthly
+                            </option>
+
+                            <option value="Yearly">
+                                Yearly
+                            </option>
                         </select>
                     </div>
 
@@ -437,24 +562,42 @@ function QuoteForm({
                             aria-invalid={Boolean(
                                 fieldErrors.annual_discount
                             )}
+                            aria-describedby={
+                                fieldErrors.annual_discount
+                                    ? 'annual_discount_error'
+                                    : !isYearlyPayment
+                                        ? 'annual_discount_help'
+                                        : undefined
+                            }
                         />
 
                         {fieldErrors.annual_discount && (
-                            <span className="field-error">
-                                {fieldErrors.annual_discount}
+                            <span
+                                id="annual_discount_error"
+                                className="field-error"
+                            >
+                                {
+                                    fieldErrors
+                                        .annual_discount
+                                }
                             </span>
                         )}
 
                         {!isYearlyPayment && (
-                            <span className="field-help">
-                                Discounts are unavailable for monthly
-                                payment.
+                            <span
+                                id="annual_discount_help"
+                                className="field-help"
+                            >
+                                Discounts are unavailable for
+                                monthly payment.
                             </span>
                         )}
                     </div>
 
                     <div className="form-field form-field-wide">
-                        <label htmlFor="notes">Notes (optional)</label>
+                        <label htmlFor="notes">
+                            Notes (optional)
+                        </label>
 
                         <textarea
                             id="notes"
@@ -473,12 +616,13 @@ function QuoteForm({
                     type="submit"
                     disabled={isSubmitting}
                 >
-                    {isSubmitting ? 'Saving quote...' : submitLabel}
+                    {isSubmitting
+                        ? 'Saving quote...'
+                        : submitLabel}
                 </button>
             </div>
         </form>
     );
 }
 
-export { initialFormData };
 export default QuoteForm;
