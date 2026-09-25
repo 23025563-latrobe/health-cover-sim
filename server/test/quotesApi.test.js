@@ -152,3 +152,53 @@ test('returns a clear error for an invalid quote ID', async () => {
         'Quote ID must be a positive integer.'
     );
 });
+
+
+test('returns an empty list when no quotes exist', async () => {
+    const response = await request(app).get('/api/quotes');
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.body.quotes, []);
+});
+
+test('rejects an update containing invalid applicant data', async () => {
+    const created = await request(app)
+        .post('/api/quotes')
+        .send(validFamilyQuote());
+
+    assert.equal(created.status, 201);
+
+    const quoteId = created.body.quote.id;
+
+    const response = await request(app)
+        .put(`/api/quotes/${quoteId}`)
+        .send({
+            ...validFamilyQuote(),
+            applicant1_age: 101
+        });
+
+    assert.equal(response.status, 400);
+    assert.equal(response.body.error, 'Validation failed.');
+
+    const unchanged = await request(app).get(
+        `/api/quotes/${quoteId}`
+    );
+
+    assert.equal(unchanged.status, 200);
+    assert.equal(unchanged.body.quote.applicant1_age, 40);
+});
+
+test('returns 404 when deleting a quote that does not exist', async () => {
+    const response = await request(app)
+        .delete('/api/quotes/999999');
+
+    assert.equal(response.status, 404);
+});
+
+test('returns 404 when updating a quote that does not exist', async () => {
+    const response = await request(app)
+        .put('/api/quotes/999999')
+        .send(validFamilyQuote());
+
+    assert.equal(response.status, 404);
+});
