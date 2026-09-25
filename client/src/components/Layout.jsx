@@ -51,8 +51,17 @@ function Layout() {
             <footer className="site-footer">
                 <div className="container">
                     <p>
-                        HealthCoverSim is a learning simulator only. It is not
-                        financial advice.
+                        © {new Date().getFullYear()} Ruixin Huang |
+                        La Trobe University | Student ID: 23025563
+                    </p>
+                    <p>
+                        HealthCoverSim was developed as an academic project
+                        for the Cloud-Based Web Application course.
+                    </p>
+                    <p className="footer-disclaimer">
+                        For educational and demonstration purposes only.
+                        Insurance premiums are simulated estimates and do not
+                        represent actual insurance products or financial advice.
                     </p>
                 </div>
             </footer>
