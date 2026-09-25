@@ -747,3 +747,128 @@ textarea {
 .skip-link:focus {
   transform: translateY(0);
 }
+
+
+/* Advanced quote dashboard */
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  border: 1px solid #dce3ee;
+  border-radius: 16px;
+  padding: 22px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgb(25 42 70 / 6%);
+}
+
+.stat-card span {
+  color: #637087;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.stat-card strong {
+  overflow-wrap: anywhere;
+  color: #125b73;
+  font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+  letter-spacing: -0.04em;
+}
+
+.stat-card small {
+  color: #778398;
+  font-size: 0.78rem;
+}
+
+.quote-toolbar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 18px;
+  margin-bottom: 18px;
+  border: 1px solid #dce3ee;
+  border-radius: 16px;
+  padding: 24px;
+  background: #ffffff;
+}
+
+.toolbar-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toolbar-field label {
+  color: #273349;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.toolbar-field input,
+.toolbar-field select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #bec8d8;
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: #ffffff;
+  color: #172033;
+}
+
+.toolbar-field input:focus,
+.toolbar-field select:focus {
+  border-color: #176b87;
+  outline: 3px solid rgb(23 107 135 / 14%);
+}
+
+.results-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.results-heading p {
+  margin: 0;
+  color: #637087;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1000px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quote-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .toolbar-search {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-stats,
+  .quote-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar-search {
+    grid-column: auto;
+  }
+
+  .results-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
