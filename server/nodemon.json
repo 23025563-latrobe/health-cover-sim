@@ -1,0 +1,11 @@
+{
+  "watch": ["src"],
+  "ext": "js,json",
+  "ignore": [
+    "data/**",
+    "tests/**",
+    "*.db",
+    "*.db-shm",
+    "*.db-wal"
+  ]
+}
