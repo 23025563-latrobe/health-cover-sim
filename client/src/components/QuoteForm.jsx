@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import PremiumPreview from './PremiumPreview';
 
@@ -22,7 +22,10 @@ function createInitialFormData(initialValues) {
         ...initialFormData,
         ...initialValues,
         applicant1_age: initialValues.applicant1_age ?? '',
-        applicant2_age: initialValues.applicant2_age ?? ''
+        applicant2_age: initialValues.applicant2_age ?? '',
+        customer_name: initialValues.customer_name ?? '',
+        notes: initialValues.notes ?? '',
+        annual_discount: initialValues.annual_discount ?? 0
     };
 }
 
@@ -119,6 +122,8 @@ function QuoteForm({
         createInitialFormData(initialValues)
     );
     const [fieldErrors, setFieldErrors] = useState({});
+    const [submitError, setSubmitError] = useState('');
+    const formRef = useRef(null);
 
     const includesApplicant2 =
         formData.cover_type !== 'Single';
@@ -142,6 +147,7 @@ function QuoteForm({
             ...currentErrors,
             [name]: undefined
         }));
+        setSubmitError('');
     }
 
     function validateAgeField(fieldName) {
@@ -186,6 +192,7 @@ function QuoteForm({
             ...currentErrors,
             [name]: undefined
         }));
+        setSubmitError('');
     }
 
     function handleSubmit(event) {
@@ -195,36 +202,25 @@ function QuoteForm({
         setFieldErrors(validationErrors);
 
         if (Object.keys(validationErrors).length > 0) {
+            setSubmitError('Please correct the highlighted fields before saving.');
+            const firstInvalidField = Object.keys(validationErrors)[0];
+            // The save button is below the form, so bring the invalid input into view.
+            formRef.current?.elements.namedItem(firstInvalidField)?.focus();
             return;
         }
 
+        setSubmitError('');
         onSubmit(prepareQuotePayload(formData));
     }
 
     return (
         <form
             className="quote-form"
+            ref={formRef}
             onSubmit={handleSubmit}
             noValidate
             aria-busy={isSubmitting}
         >
-            {serverErrors.length > 0 && (
-                <div
-                    className="alert alert-error"
-                    role="alert"
-                >
-                    <strong>
-                        The quote could not be saved.
-                    </strong>
-
-                    <ul>
-                        {serverErrors.map((error) => (
-                            <li key={error}>{error}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-
             <div className="quote-form-layout">
                 <div className="quote-form-main">
                     <section className="form-section">
@@ -670,6 +666,18 @@ function QuoteForm({
                         </div>
                     </section>
 
+                    {(submitError || serverErrors.length > 0) && (
+                        <div className="alert alert-error" role="alert">
+                            <strong>{submitError || 'The quote could not be saved.'}</strong>
+                            {serverErrors.length > 0 && (
+                                <ul>
+                                    {serverErrors.map((error, index) => (
+                                        <li key={`${index}-${error}`}>{error}</li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    )}
                     <div className="form-actions">
                         <button
                             className="button button-primary"

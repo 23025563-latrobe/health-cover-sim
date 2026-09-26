@@ -43,6 +43,10 @@ function EditQuotePage() {
         try {
             const response = await updateQuote(id, quoteData);
 
+            if (!response.quote?.id) {
+                throw new Error('The server did not return the updated quote. Please refresh and check the saved record.');
+            }
+
             navigate(`/quotes/${response.quote.id}`, {
                 state: {
                     successMessage: 'Quote updated successfully.'
@@ -50,9 +54,9 @@ function EditQuotePage() {
             });
         } catch (error) {
             setServerErrors(
-                error.details?.length > 0
-                    ? error.details
-                    : [error.message]
+                Array.isArray(error.details) && error.details.length > 0
+                    ? error.details.map((detail) => typeof detail === 'string' ? detail : detail.message || JSON.stringify(detail))
+                    : [error.message || 'Unable to update the quote. Please try again.']
             );
         } finally {
             setIsSubmitting(false);

@@ -14,7 +14,7 @@ async function apiRequest(endpoint, options = {}) {
             data.error || 'The request could not be completed.'
         );
 
-        error.details = data.details || [];
+        error.details = Array.isArray(data.details) ? data.details : [];
         error.status = response.status;
 
         throw error;
