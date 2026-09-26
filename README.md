@@ -6,6 +6,14 @@ Cloud-Based Web Application — academic project
 
 HealthCoverSim is a full-stack web application for creating, viewing, updating, and deleting simulated private health insurance quotes. It calculates indicative premiums for Single, Couple, and Family cover, including applicable Lifetime Health Cover (LHC) loading and annual-payment discounts. It is an educational simulator, not an insurer or a source of real insurance quotations.
 
+## Video Demonstration
+
+A recorded demonstration of HealthCoverSim is available through Google Drive:
+
+**[Watch the HealthCoverSim Video Demonstration](https://drive.google.com/file/d/1E7ORHE4cIuGlkPT_TRV3AARLRVJ5xDWy/view?usp=sharing)**
+
+The video demonstrates the application's main dashboard, quote creation, live premium calculation, detailed premium breakdown, and CRUD operations (Create, Read, Update, and Delete). It also demonstrates the Family quotation worked example from Section 7 of the assignment.
+
 ## Application screenshots
 
 ### Quote dashboard
